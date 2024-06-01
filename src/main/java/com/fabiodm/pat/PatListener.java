@@ -34,15 +34,15 @@ final class PatListener implements RedisPubSubListener<String, byte[]> {
     }
 
     @Override
+    public void message(final String pattern, final String channel, final byte[] message) {
+    }
+
+    @Override
     public void subscribed(final String channel, final long count) {
     }
 
     @Override
     public void unsubscribed(final String channel, final long count) {
-    }
-
-    @Override
-    public void message(final String pattern, final String channel, final byte[] message) {
     }
 
     @Override
