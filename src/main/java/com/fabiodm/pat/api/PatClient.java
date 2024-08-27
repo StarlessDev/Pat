@@ -1,6 +1,7 @@
 package com.fabiodm.pat.api;
 
 import com.google.protobuf.GeneratedMessage;
+import com.google.protobuf.Message;
 
 /**
  * This interface defines the operations for the Pat system.
@@ -63,7 +64,7 @@ public interface PatClient {
      * @param channel the channel to send the message to
      * @param message the message
      */
-    void send(final String channel, final GeneratedMessage message);
+    void send(final String channel, final Message message);
 
     /**
      * Sends a message to a channel asynchronously.
@@ -90,7 +91,7 @@ public interface PatClient {
      * @param channel the channel to send the message to
      * @param message the message
      */
-    void sendAsync(final String channel, final GeneratedMessage message);
+    void sendAsync(final String channel, final Message message);
 
     /**
      * Checks if the system is connected to the server.
