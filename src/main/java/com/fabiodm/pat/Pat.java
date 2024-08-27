@@ -124,6 +124,21 @@ final class Pat implements PatClient {
     }
 
     @Override
+    public void sendAsync(String channel, byte[] message) {
+        this.connection.async().publish(channel, message);
+    }
+
+    @Override
+    public void sendAsync(String channel, String message) {
+        this.sendAsync(channel, message.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public void sendAsync(String channel, GeneratedMessage message) {
+        this.sendAsync(channel, message.toByteArray());
+    }
+
+    @Override
     public boolean isConnected() {
         return this.connection != null && this.connection.isOpen();
     }
