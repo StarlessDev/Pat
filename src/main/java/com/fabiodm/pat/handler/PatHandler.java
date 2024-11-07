@@ -48,7 +48,9 @@ public final class PatHandler {
             try {
                 patMethod.method().invoke(this.listener, event);
             } catch (final InvocationTargetException | IllegalAccessException e) {
-                throw new PatEventInvocationException("Error invoking method for channel '" + event.channel() + "' in class '" + this.listener.getClass().getSimpleName() + "'");
+                throw new PatEventInvocationException(
+                        "Error invoking method for channel '" + event.channel() + "' in class '" + this.listener.getClass().getSimpleName() + "'",
+                        e);
             }
         }
     }
