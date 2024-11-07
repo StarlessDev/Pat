@@ -11,7 +11,7 @@ public final class PatEventInvocationException extends RuntimeException {
      *
      * @param message the detail message. The detail message is saved for later retrieval by the Throwable.getMessage() method.
      */
-    public PatEventInvocationException(final String message) {
-        super(message);
+    public PatEventInvocationException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }
