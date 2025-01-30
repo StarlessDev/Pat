@@ -18,14 +18,14 @@
         <dependency>
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
-            <version>6.4.0.RELEASE</version>
+            <version>6.5.3.RELEASE</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
-            <version>4.27.3</version>
+            <version>4.29.3</version>
             <scope>compile</scope>
         </dependency>
 
