@@ -1,7 +1,7 @@
 package com.fabiodm.pat.api;
 
-import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.Message;
+import io.lettuce.core.RedisFuture;
 
 /**
  * This interface defines the operations for the Pat system.
@@ -72,8 +72,9 @@ public interface PatClient {
      *
      * @param channel the channel to send the message to
      * @param message the message
+     * @return a {@link RedisFuture<Long>} instance
      */
-    void sendAsync(final String channel, final byte[] message);
+    RedisFuture<Long> sendAsync(final String channel, final byte[] message);
 
     /**
      * Sends a message to a channel asynchronously.
@@ -81,8 +82,9 @@ public interface PatClient {
      *
      * @param channel the channel to send the message to
      * @param message the message
+     * @return a {@link RedisFuture<Long>} instance
      */
-    void sendAsync(final String channel, final String message);
+    RedisFuture<Long> sendAsync(final String channel, final String message);
 
     /**
      * Sends a message to a channel synchronously.
@@ -90,8 +92,9 @@ public interface PatClient {
      *
      * @param channel the channel to send the message to
      * @param message the message
+     * @return a {@link RedisFuture<Long>} instance
      */
-    void sendAsync(final String channel, final Message message);
+    RedisFuture<Long> sendAsync(final String channel, final Message message);
 
     /**
      * Checks if the system is connected to the server.

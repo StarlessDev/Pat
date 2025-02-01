@@ -9,6 +9,7 @@ import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.Message;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisFuture;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.codec.CompressionCodec;
 import io.lettuce.core.codec.RedisCodec;
@@ -125,18 +126,18 @@ final class Pat implements PatClient {
     }
 
     @Override
-    public void sendAsync(String channel, byte[] message) {
-        this.connection.async().publish(channel, message);
+    public RedisFuture<Long> sendAsync(String channel, byte[] message) {
+        return this.connection.async().publish(channel, message);
     }
 
     @Override
-    public void sendAsync(String channel, String message) {
-        this.sendAsync(channel, message.getBytes(StandardCharsets.UTF_8));
+    public RedisFuture<Long> sendAsync(String channel, String message) {
+        return this.sendAsync(channel, message.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
-    public void sendAsync(String channel, Message message) {
-        this.sendAsync(channel, message.toByteArray());
+    public RedisFuture<Long> sendAsync(String channel, Message message) {
+        return this.sendAsync(channel, message.toByteArray());
     }
 
     @Override
