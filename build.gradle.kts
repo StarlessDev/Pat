@@ -1,5 +1,6 @@
 plugins {
     java
+    `java-library`
     `maven-publish`
 }
 
@@ -11,8 +12,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.lettuce:lettuce-core:6.5.3.RELEASE")
-    compileOnly("com.google.protobuf:protobuf-java-util:4.29.3")
+    api("io.lettuce:lettuce-core:6.5.3.RELEASE")
+    api("com.google.protobuf:protobuf-java-util:4.29.3")
 }
 
 publishing {
