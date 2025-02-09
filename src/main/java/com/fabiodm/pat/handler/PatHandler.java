@@ -27,7 +27,7 @@ public final class PatHandler {
      */
     public PatHandler(final Object listener) {
         this.listener = listener;
-        for (final Method method : listener.getClass().getDeclaredMethods()) {
+        for (final Method method : listener.getClass().getMethods()) {
             PatMethod.fromMethod(method).ifPresent(patMethod -> {
                 if (this.channels.containsKey(patMethod.channel())) {
                     throw new PatRegistrationException("Duplicate subscription for channel '" + patMethod.channel() + "' in class '" + this.listener.getClass().getSimpleName() + "'");
