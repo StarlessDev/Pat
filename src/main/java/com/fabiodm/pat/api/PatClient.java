@@ -1,6 +1,5 @@
 package com.fabiodm.pat.api;
 
-import com.google.protobuf.Message;
 import io.lettuce.core.RedisFuture;
 
 /**
@@ -58,15 +57,6 @@ public interface PatClient {
     void send(final String channel, final String message);
 
     /**
-     * Sends a message to a channel synchronously.
-     * The message is a GeneratedMessage from the Google Protocol Buffers library.
-     *
-     * @param channel the channel to send the message to
-     * @param message the message
-     */
-    void send(final String channel, final Message message);
-
-    /**
      * Sends a message to a channel asynchronously.
      * The message is a byte array.
      *
@@ -85,16 +75,6 @@ public interface PatClient {
      * @return a {@link RedisFuture<Long>} instance
      */
     RedisFuture<Long> sendAsync(final String channel, final String message);
-
-    /**
-     * Sends a message to a channel synchronously.
-     * The message is a GeneratedMessage from the Google Protocol Buffers library.
-     *
-     * @param channel the channel to send the message to
-     * @param message the message
-     * @return a {@link RedisFuture<Long>} instance
-     */
-    RedisFuture<Long> sendAsync(final String channel, final Message message);
 
     /**
      * Checks if the system is connected to the server.

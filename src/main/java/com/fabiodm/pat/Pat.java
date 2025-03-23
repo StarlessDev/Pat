@@ -5,8 +5,6 @@ import com.fabiodm.pat.api.event.PatEvent;
 import com.fabiodm.pat.codec.ByteArrayCodec;
 import com.fabiodm.pat.exception.PatRegistrationException;
 import com.fabiodm.pat.handler.PatHandler;
-import com.google.protobuf.GeneratedMessage;
-import com.google.protobuf.Message;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisFuture;
@@ -121,11 +119,6 @@ final class Pat implements PatClient {
     }
 
     @Override
-    public void send(final String channel, final Message message) {
-        this.send(channel, message.toByteArray());
-    }
-
-    @Override
     public RedisFuture<Long> sendAsync(String channel, byte[] message) {
         return this.connection.async().publish(channel, message);
     }
@@ -133,11 +126,6 @@ final class Pat implements PatClient {
     @Override
     public RedisFuture<Long> sendAsync(String channel, String message) {
         return this.sendAsync(channel, message.getBytes(StandardCharsets.UTF_8));
-    }
-
-    @Override
-    public RedisFuture<Long> sendAsync(String channel, Message message) {
-        return this.sendAsync(channel, message.toByteArray());
     }
 
     @Override
