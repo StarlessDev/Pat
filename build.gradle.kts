@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     api("io.lettuce:lettuce-core:6.5.3.RELEASE")
+    compileOnly("com.google.protobuf:protobuf-java-util:4.29.3")
 }
 
 publishing {
