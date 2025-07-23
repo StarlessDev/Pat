@@ -13,7 +13,10 @@ repositories {
 
 dependencies {
     api(libs.lettuce)
+
+    // Optional dependencies used for parsers
     compileOnly(libs.protobuf)
+    compileOnly(libs.gson)
 }
 
 publishing {
