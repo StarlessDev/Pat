@@ -1,0 +1,9 @@
+[versions]
+
+lettuce = "6.7.1.RELEASE"
+protobuf = "4.31.1"
+
+[libraries]
+
+lettuce = { group = "io.lettuce", name = "lettuce-core", version.ref = "lettuce" }
+protobuf = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
