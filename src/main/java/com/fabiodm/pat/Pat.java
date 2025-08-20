@@ -16,6 +16,7 @@ import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class implements the PatClient interface and provides methods for connecting to a Redis server,
@@ -35,7 +36,7 @@ final class Pat implements PatClient {
     private final PatListener patListener;
 
     // The set of listeners for PatEvents.
-    private final Set<PatHandler> listeners = new HashSet<>();
+    private final Set<PatHandler> listeners = ConcurrentHashMap.newKeySet();
 
     /**
      * Constructs a Pat object with the given RedisURI and ClientOptions.
