@@ -1,18 +1,17 @@
 plugins {
     java
-    `java-library`
     `maven-publish`
 }
 
 group = "dev.starless"
-version = "1.0.7"
+version = "1.0.8"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    api(libs.lettuce)
+    compileOnly(libs.lettuce)
 
     // Optional dependencies used for parsers
     compileOnly(libs.protobuf)
