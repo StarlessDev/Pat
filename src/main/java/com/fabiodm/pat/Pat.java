@@ -3,8 +3,8 @@ package com.fabiodm.pat;
 import com.fabiodm.pat.api.PatClient;
 import com.fabiodm.pat.api.event.PatEvent;
 import com.fabiodm.pat.codec.ByteArrayCodec;
-import com.fabiodm.pat.exception.PatRegistrationException;
 import com.fabiodm.pat.handler.PatHandler;
+import com.fabiodm.pat.handler.impl.ConsumerSubscription;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisFuture;
@@ -12,17 +12,21 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.codec.CompressionCodec;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * This class implements the PatClient interface and provides methods for connecting to a Redis server,
  * sending and receiving messages, and managing listeners for messages.
  */
-final class Pat implements PatClient {
+public final class Pat implements PatClient {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(Pat.class);
 
     // The Redis client for connecting to the Redis server.
     private final RedisClient redisClient;
@@ -36,7 +40,7 @@ final class Pat implements PatClient {
     private final PatListener patListener;
 
     // The set of listeners for PatEvents.
-    private final Set<PatHandler> listeners = ConcurrentHashMap.newKeySet();
+    private final Map<Class<?>, PatHandler> listeners = new ConcurrentHashMap<>();
 
     /**
      * Constructs a Pat object with the given RedisURI and ClientOptions.
@@ -86,27 +90,28 @@ final class Pat implements PatClient {
     public void register(final Object object) {
         final PatHandler patHandler = new PatHandler(object);
         if (!patHandler.isEmpty()) {
-            for (final String channel : patHandler.getChannels()) {
-                if (this.listeners.stream().anyMatch(handler -> handler.getChannels().contains(channel))) {
-                    throw new PatRegistrationException("Duplicate subscription for channel '" + channel + "' in class '" + object.getClass().getSimpleName() + "'");
-                }
-            }
-
-            if (this.listeners.add(patHandler)) {
-                patHandler.getChannels().forEach(this::subscribe);
-            }
+            this.listeners.put(object.getClass(), patHandler);
+            patHandler.getChannels().forEach(this::subscribe);
         }
     }
 
     @Override
     public void unregister(final Object object) {
-        this.listeners.stream()
-            .filter(patHandler -> patHandler.isListener(object))
-            .findFirst()
-            .ifPresent(patHandler -> {
-                this.listeners.remove(patHandler);
-                patHandler.getChannels().forEach(this::unsubscribe);
-            });
+        final PatHandler handler = this.listeners.get(object.getClass());
+        if (handler == null) return;
+
+        this.listeners.remove(object.getClass());
+        handler.getChannels().forEach(this::unsubscribe);
+    }
+
+    @Override
+    public void subscribeToChannel(final Object listener,
+                                   final String channel,
+                                   final Consumer<PatEvent> consumer) {
+        final PatHandler handler = this.listeners.get(listener.getClass());
+        if (handler == null) return;
+
+        handler.registerSubscription(channel, new ConsumerSubscription(consumer));
     }
 
     @Override
@@ -158,6 +163,6 @@ final class Pat implements PatClient {
      * @param event the PatEvent to broadcast
      */
     void broadcast(final PatEvent event) {
-        this.listeners.forEach(listener -> listener.handle(event));
+        this.listeners.values().forEach(handler -> handler.handle(event));
     }
 }
