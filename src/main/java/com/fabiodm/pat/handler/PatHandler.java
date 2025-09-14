@@ -70,7 +70,10 @@ public final class PatHandler {
      * @param event the PatEvent to handle
      */
     public void handle(final PatEvent event) {
-        for (final PatSubscription subscription : this.channels.get(event.channel())) {
+        final List<PatSubscription> subscriptions = this.channels.get(event.channel());
+        if (subscriptions == null) return;
+
+        for (final PatSubscription subscription : subscriptions) {
             try {
                 subscription.handle(listener, event);
             } catch (final PatEventInvocationException e) {
