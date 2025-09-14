@@ -89,8 +89,8 @@ public final class Pat implements PatClient {
     @Override
     public void register(final Object object) {
         final PatHandler patHandler = new PatHandler(object);
+        this.listeners.put(object.getClass(), patHandler);
         if (!patHandler.isEmpty()) {
-            this.listeners.put(object.getClass(), patHandler);
             patHandler.getChannels().forEach(this::subscribe);
         }
     }
@@ -111,6 +111,7 @@ public final class Pat implements PatClient {
         final PatHandler handler = this.listeners.get(listener.getClass());
         if (handler == null) return;
 
+        this.subscribe(channel);
         handler.registerSubscription(channel, new ConsumerSubscription(consumer));
     }
 
