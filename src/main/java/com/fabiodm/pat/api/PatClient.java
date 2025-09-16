@@ -1,6 +1,9 @@
 package com.fabiodm.pat.api;
 
+import com.fabiodm.pat.api.event.PatEvent;
 import io.lettuce.core.RedisFuture;
+
+import java.util.function.Consumer;
 
 /**
  * This interface defines the operations for the Pat system.
@@ -37,6 +40,21 @@ public interface PatClient {
      * @param object the listener object
      */
     void unregister(final Object object);
+
+    /**
+     * Uses an already registered listener to subscribe a
+     * consumer to a specific redis pubsub channel.
+     * <p>
+     * Remember that this method will be unregistered
+     * only when the entire listener is unregistered.
+     *
+     * @param listener an already registered listener
+     * @param channel the channel to subscribe to
+     * @param consumer the consumer to handle the messages
+     */
+    void subscribeToChannel(final Object listener,
+                            final String channel,
+                            final Consumer<PatEvent> consumer);
 
     /**
      * Sends a message to a channel synchronously.

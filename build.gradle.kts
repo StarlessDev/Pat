@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.starless"
-version = "1.0.8"
+version = "1.1.1"
 
 repositories {
     mavenCentral()
@@ -35,3 +35,11 @@ publishing {
         }
     }
 }
+
+tasks {
+    compileJava {
+        options.encoding = Charsets.UTF_8.name()
+        options.release.set(17)
+    }
+}
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
