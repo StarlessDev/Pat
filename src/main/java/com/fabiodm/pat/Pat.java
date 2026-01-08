@@ -136,6 +136,11 @@ public final class Pat implements PatClient {
     }
 
     @Override
+    public StatefulRedisPubSubConnection<String, byte[]> getConnection() {
+        return connection;
+    }
+
+    @Override
     public boolean isConnected() {
         return this.connection != null && this.connection.isOpen();
     }

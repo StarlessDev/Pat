@@ -2,6 +2,7 @@ package com.fabiodm.pat.api;
 
 import com.fabiodm.pat.api.event.PatEvent;
 import io.lettuce.core.RedisFuture;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 
 import java.util.function.Consumer;
 
@@ -93,6 +94,13 @@ public interface PatClient {
      * @return a {@link RedisFuture<Long>} instance
      */
     RedisFuture<Long> sendAsync(final String channel, final String message);
+
+    /**
+     * Gets the underlying Redis pub/sub connection.
+     *
+     * @return the Redis pub/sub connection
+     */
+    StatefulRedisPubSubConnection<String, byte[]> getConnection();
 
     /**
      * Checks if the system is connected to the server.
