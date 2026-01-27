@@ -1,14 +1,19 @@
 package com.fabiodm.pat.handler;
 
+import com.fabiodm.pat.Pat;
+import com.fabiodm.pat.api.PatSubscribe;
 import com.fabiodm.pat.api.event.PatEvent;
 import com.fabiodm.pat.exception.PatEventInvocationException;
 import com.fabiodm.pat.exception.PatRegistrationException;
+import com.fabiodm.pat.handler.impl.AnnotatedSubscription;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class represents a listener for PatEvents.
@@ -17,7 +22,7 @@ import java.util.Set;
 public final class PatHandler {
 
     private final Object listener;
-    private final Map<String, PatMethod> channels = new HashMap<>();
+    private final Map<String, List<PatSubscription>> channels = new ConcurrentHashMap<>();
 
     /**
      * Constructs a PatHandler with the given listener object.
@@ -27,14 +32,36 @@ public final class PatHandler {
      */
     public PatHandler(final Object listener) {
         this.listener = listener;
-        for (final Method method : listener.getClass().getDeclaredMethods()) {
-            PatMethod.fromMethod(method).ifPresent(patMethod -> {
-                if (this.channels.containsKey(patMethod.channel())) {
-                    throw new PatRegistrationException("Duplicate subscription for channel '" + patMethod.channel() + "' in class '" + this.listener.getClass().getSimpleName() + "'");
+        this.registerAnnotatedSubscriptions();
+    }
+
+    private void registerAnnotatedSubscriptions() {
+        for (final Method method : listener.getClass().getMethods()) {
+            final String subscriptionChannel = this.getSubscriptionFromMethod(method);
+            if (subscriptionChannel != null) {
+                try {
+                    this.registerSubscription(subscriptionChannel, new AnnotatedSubscription(method));
+                } catch (final PatRegistrationException e) {
+                    Pat.LOGGER.error("An error occurred while registering a listener: ", e);
                 }
-                this.channels.put(patMethod.channel(), patMethod);
-            });
+            }
         }
+    }
+
+    private String getSubscriptionFromMethod(final Method method) {
+        final PatSubscribe annotation = method.getAnnotation(PatSubscribe.class);
+        if (annotation != null) {
+            final Class<?>[] parameters = method.getParameterTypes();
+            if (parameters.length == 1 && parameters[0].equals(PatEvent.class)) {
+                return annotation.value();
+            }
+        }
+        return null;
+    }
+
+    public void registerSubscription(final String channel,
+                                     final PatSubscription subscription) {
+        this.channels.computeIfAbsent(channel, k -> new CopyOnWriteArrayList<>()).add(subscription);
     }
 
     /**
@@ -43,12 +70,14 @@ public final class PatHandler {
      * @param event the PatEvent to handle
      */
     public void handle(final PatEvent event) {
-        final PatMethod patMethod = this.channels.get(event.channel());
-        if (patMethod != null && patMethod.method().trySetAccessible()) {
+        final List<PatSubscription> subscriptions = this.channels.get(event.channel());
+        if (subscriptions == null) return;
+
+        for (final PatSubscription subscription : subscriptions) {
             try {
-                patMethod.method().invoke(this.listener, event);
-            } catch (final InvocationTargetException | IllegalAccessException e) {
-                throw new PatEventInvocationException("Error invoking method for channel '" + event.channel() + "' in class '" + this.listener.getClass().getSimpleName() + "'");
+                subscription.handle(listener, event);
+            } catch (final PatEventInvocationException e) {
+                Pat.LOGGER.error(e.getMessage(), e.getCause());
             }
         }
     }
@@ -79,5 +108,17 @@ public final class PatHandler {
      */
     public boolean isListener(final Object object) {
         return this.listener == object;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PatHandler that = (PatHandler) o;
+        return Objects.equals(listener.getClass(), that.listener.getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(listener);
     }
 }

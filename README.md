@@ -30,6 +30,8 @@ public class PatExample {
 
         // Send a message to the "test" channel
         pat.send("test", "Test message.");
+        // Or send it asynchronously if you do not like waiting
+        pat.sendAsync("test", "Waiting is boring.");
     }
 
     @PatSubscribe("test") // Subscribe to the "test" channel

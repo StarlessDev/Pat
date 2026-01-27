@@ -1,6 +1,9 @@
 package com.fabiodm.pat.api.event;
 
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.fabiodm.pat.api.parsers.PatParser;
+import com.fabiodm.pat.api.parsers.impl.GsonParser;
+import com.fabiodm.pat.api.parsers.impl.ProtobufParser;
+import com.google.gson.JsonElement;
 import com.google.protobuf.Parser;
 
 import java.util.Optional;
@@ -11,20 +14,12 @@ import java.util.Optional;
  */
 public record PatEvent(String channel, byte[] message) {
 
-    /**
-     * Serializes the message into a Protocol Buffers message.
-     * If the serialization fails, an empty Optional is returned.
-     *
-     * @param parser the Protocol Buffers parser to use for serialization
-     * @param <T>    the type of the Protocol Buffers message
-     * @return an Optional containing the serialized message if successful, otherwise an empty Optional
-     */
-    public <T> Optional<T> serializeProto(final Parser<T> parser) {
-        try {
-            return Optional.ofNullable(parser.parseFrom(this.message));
-        } catch (final InvalidProtocolBufferException e) {
-            return Optional.empty();
-        }
+    public <T> PatParser<T> asProtobufParser(final Parser<T> parser) {
+        return new ProtobufParser<>(this, parser);
+    }
+
+    public PatParser<JsonElement> asGsonParser() {
+        return new GsonParser(this);
     }
 
     /**
@@ -33,9 +28,9 @@ public record PatEvent(String channel, byte[] message) {
      *
      * @return the message as a String, or null if the message is null
      */
-    public String messageString() {
+    public String messageAsString() {
         return Optional.ofNullable(this.message)
-            .map(String::new)
-            .orElse(null);
+                .map(String::new)
+                .orElse(null);
     }
 }
