@@ -168,7 +168,7 @@ public final class Pat implements PatClient {
      *
      * @param event the PatEvent to broadcast
      */
-    void broadcast(final PatEvent event) {
+    public void broadcast(final PatEvent event) {
         this.listeners.values().forEach(handler -> handler.handle(event));
     }
 }

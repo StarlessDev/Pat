@@ -1,10 +1,9 @@
 plugins {
-    java
-    `maven-publish`
+    id("java-library")
 }
 
-group = "dev.starless"
-version = "1.1.2"
+group = "com.fabiodm.pat"
+version = "1.1.3"
 
 repositories {
     mavenCentral()
@@ -18,28 +17,13 @@ dependencies {
     compileOnly(libs.gson)
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "milkyway"
-            url = uri("https://repo.starless.dev/releases")
-            credentials(PasswordCredentials::class)
-        }
-    }
-
-    publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                from(components["java"])
-            }
-        }
-    }
+tasks.compileJava {
+    options.encoding = Charsets.UTF_8.name()
+    options.release.set(25)
 }
 
-tasks {
-    compileJava {
-        options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))

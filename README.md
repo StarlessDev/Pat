@@ -1,49 +1,136 @@
 # Pat
 
-Pat is a streamlined Java library built on top of Lettuce, providing an effortless way to integrate Redis functionality
-into your projects. With Pat, you can easily incorporate Redis listeners and efficiently send packets without the hassle
-of complex setup and implementation.
+Pat is a streamlined, high-performance Java library built on top of [Lettuce](https://lettuce.io/), designed to provide an effortless way to integrate Redis Pub/Sub functionality into your projects. With Pat, you can incorporate Redis listeners and efficiently send messages without the hassle of complex setup and implementation.
 
-### Getting Started
+## Features
 
-To begin using Pat in your projects, simply refer to the PatClient interface to familiarize yourself with the available
-methods and their usage.
+- **Fluent API**: Use `PatBuilder` for a clean and readable configuration.
+- **Easy Pub/Sub**: Simple methods for synchronous and asynchronous message publishing.
+- **Annotation-based Subscriptions**: Register listeners using the `@PatSubscribe` annotation.
+- **Functional Subscriptions**: Dynamically subscribe to channels using `Consumer<PatEvent>`.
+- **Built-in Parsing**: Integrated support for **Gson** and **Protobuf** to easily deserialize messages.
+- **Compression Support**: Built-in support for compression (e.g., DEFLATE).
+- **Lightweight**: Minimal overhead over Lettuce.
 
-### Example
+## Installation
 
-Usage of Pat for sending and receiving messages:
-
-```java
-public class PatExample {
-
-    public static void main(String[] args) {
-        // Create a PatClient instance
-        final PatClient pat = PatBuilder.create("redis://localhost:6379") // Create a PatBuilder instance
-            .withClientOptions(ClientOptions.builder().build()) // Set the client options (optional, default options are used if not set)
-            .withCompression(CompressionCodec.CompressionType.DEFLATE) // Set the compression type (optional, no compression is used if not set)
-            .build(); // Build the PatClient instance
-        // Connect to the Redis server
-        pat.connect();
-
-        // Register the class to listen for events
-        pat.register(this);
-
-        // Send a message to the "test" channel
-        pat.send("test", "Test message.");
-        // Or send it asynchronously if you do not like waiting
-        pat.sendAsync("test", "Waiting is boring.");
-    }
-
-    @PatSubscribe("test") // Subscribe to the "test" channel
-    public void onPat(final PatEvent event) { // Listen for PatEvents
-        // Get the channel name
-        final String channel = event.channel();
-
-        // Get the message bytes
-        final byte[] bytes = event.message();
-
-        // Get the message as a string
-        final String message = event.messageString();
-    }
+### Gradle (Kotlin DSL)
+```kotlin
+dependencies {
+    implementation("com.fabiodm.pat:pat:1.1.3")
 }
 ```
+
+### Maven
+```xml
+<dependency>
+    <groupId>com.fabiodm.pat</groupId>
+    <artifactId>pat</artifactId>
+    <version>1.1.3</version>
+</dependency>
+```
+
+## Getting Started
+
+### 1. Create and Connect the Client
+
+Use the `PatBuilder` to configure your Redis connection.
+
+```java
+import com.fabiodm.pat.PatBuilder;
+import com.fabiodm.pat.api.PatClient;
+import io.lettuce.core.RedisURI;
+import io.lettuce.core.codec.CompressionCodec;
+
+PatClient pat = PatBuilder.create(RedisURI.create("redis://localhost:6379"))
+        .withCompression(CompressionCodec.CompressionType.DEFLATE) // Optional
+        .build();
+
+// Connect to the Redis server
+pat.connect();
+```
+
+### 2. Publishing Messages
+
+Pat supports both synchronous and asynchronous message publishing.
+
+```java
+// Synchronous publishing
+pat.send("my-channel", "Hello, Redis!");
+pat.send("my-channel", new byte[]{0x01, 0x02, 0x03});
+
+// Asynchronous publishing
+pat.sendAsync("my-channel", "I'm fast!");
+```
+
+### 3. Subscribing to Channels
+
+There are two ways to receive messages:
+
+#### A. Using Annotations (Recommended)
+Annotate your methods with `@PatSubscribe` and register the class instance.
+
+```java
+public class MyListener {
+
+    @PatSubscribe("my-channel")
+    public void onMessage(PatEvent event) {
+        System.out.println("Received from " + event.channel() + ": " + event.messageAsString());
+    }
+}
+
+// Registration
+MyListener listener = new MyListener();
+pat.register(listener);
+```
+
+#### B. Functional Subscription
+You can also subscribe dynamically using a `Consumer`.
+
+```java
+pat.subscribeToChannel(this, "other-channel", event -> {
+    System.out.println("Dynamic message: " + event.messageAsString());
+});
+```
+
+### 4. Message Parsing
+
+Pat includes built-in parsers for common formats like JSON (via Gson) and Protobuf.
+
+```java
+@PatSubscribe("data-channel")
+public void onEvent(PatEvent event) {
+    // Parse as JSON using Gson
+    event.asGsonParser().asObject().ifPresent(jsonElement -> System.out.println("JSON: " + jsonElement));
+
+    // Parse as Protobuf
+    event.asProtobufParser(MyProtoMessage.parser()).asObject().ifPresent(proto -> System.out.println("Proto: " + proto.getName()));
+}
+```
+
+## Advanced Configuration
+
+You can customize the underlying Lettuce `ClientOptions`:
+
+```java
+ClientOptions options = ClientOptions.builder()
+        .autoReconnect(true)
+        .build();
+
+PatClient pat = PatBuilder.create(RedisURI.create("redis://localhost:6379"))
+        .withClientOptions(options)
+        .build();
+```
+
+## Lifecycle Management
+
+To gracefully shut down the client and release resources:
+
+```java
+pat.disconnect();
+pat.shutdown();
+```
+
+## Requirements
+- Java 25 or higher.
+- Redis server.

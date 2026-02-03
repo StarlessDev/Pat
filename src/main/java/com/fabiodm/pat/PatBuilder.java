@@ -27,13 +27,13 @@ public final class PatBuilder {
     private PatBuilder(final RedisURI redisURI) {
         this.redisURI = redisURI;
         this.clientOptions = ClientOptions.builder()
-            .autoReconnect(true)
-            .pingBeforeActivateConnection(true)
-            .scriptCharset(StandardCharsets.UTF_8)
-            .timeoutOptions(TimeoutOptions.builder()
-                .fixedTimeout(Duration.ofSeconds(3))
-                .build())
-            .build();
+                .autoReconnect(true)
+                .pingBeforeActivateConnection(true)
+                .scriptCharset(StandardCharsets.UTF_8)
+                .timeoutOptions(TimeoutOptions.builder()
+                        .fixedTimeout(Duration.ofSeconds(3))
+                        .build())
+                .build();
     }
 
     /**
