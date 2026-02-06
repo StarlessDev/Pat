@@ -1,6 +1,8 @@
 # Pat
 
-Pat is a streamlined, high-performance Java library built on top of [Lettuce](https://lettuce.io/), designed to provide an effortless way to integrate Redis Pub/Sub functionality into your projects. With Pat, you can incorporate Redis listeners and efficiently send messages without the hassle of complex setup and implementation.
+Pat is a streamlined, high-performance Java library built on top of [Lettuce](https://lettuce.io/), designed to provide
+an effortless way to integrate Redis Pub/Sub functionality into your projects. With Pat, you can incorporate Redis
+listeners and efficiently send messages without the hassle of complex setup and implementation.
 
 ## Features
 
@@ -15,6 +17,7 @@ Pat is a streamlined, high-performance Java library built on top of [Lettuce](ht
 ## Installation
 
 ### Gradle (Kotlin DSL)
+
 ```kotlin
 dependencies {
     implementation("com.fabiodm.pat:pat:1.1.3")
@@ -22,6 +25,7 @@ dependencies {
 ```
 
 ### Maven
+
 ```xml
 <dependency>
     <groupId>com.fabiodm.pat</groupId>
@@ -68,6 +72,7 @@ pat.sendAsync("my-channel", "I'm fast!");
 There are two ways to receive messages:
 
 #### A. Using Annotations (Recommended)
+
 Annotate your methods with `@PatSubscribe` and register the class instance.
 
 ```java
@@ -85,6 +90,7 @@ pat.register(listener);
 ```
 
 #### B. Functional Subscription
+
 You can also subscribe dynamically using a `Consumer`.
 
 ```java
@@ -132,5 +138,6 @@ pat.shutdown();
 ```
 
 ## Requirements
+
 - Java 25 or higher.
 - Redis server.

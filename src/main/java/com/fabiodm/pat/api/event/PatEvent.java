@@ -11,6 +11,8 @@ import java.util.Optional;
 /**
  * This class represents an event in the Pat system.
  * It holds a reference to the channel name and the message as a byte array.
+ * @param channel the channel name
+ * @param message the message
  */
 public record PatEvent(String channel, byte[] message) {
 
