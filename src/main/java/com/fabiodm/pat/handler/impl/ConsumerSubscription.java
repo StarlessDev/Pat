@@ -6,13 +6,13 @@ import com.fabiodm.pat.handler.PatSubscription;
 import java.util.function.Consumer;
 
 /*
-* Class representing a subscription to a PatEvent that is handled by a Consumer.
-* */
+ * Class representing a subscription to a PatEvent that is handled by a Consumer.
+ * */
 public class ConsumerSubscription extends PatSubscription {
 
     /*
-    * Consumer that handles the PatEvent.
-    * */
+     * Consumer that handles the PatEvent.
+     * */
     private final Consumer<PatEvent> consumer;
 
     public ConsumerSubscription(Consumer<PatEvent> consumer) {

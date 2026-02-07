@@ -42,6 +42,8 @@ public final class Pat implements PatClient {
     // The set of listeners for PatEvents.
     private final Map<Class<?>, PatHandler> listeners = new ConcurrentHashMap<>();
 
+    private final boolean isPatRedisClient;
+
     /**
      * Constructs a Pat object with the given RedisURI and ClientOptions.
      *
@@ -49,8 +51,20 @@ public final class Pat implements PatClient {
      * @param options the ClientOptions for the Redis client
      */
     Pat(final RedisURI URI, final ClientOptions options, final CompressionCodec.CompressionType compressionType) {
+        this.isPatRedisClient = true;
+
         this.redisClient = RedisClient.create(URI);
         this.redisClient.setOptions(options);
+
+        this.compressionType = compressionType;
+
+        this.patListener = new PatListener(this);
+    }
+
+    Pat(final RedisClient redisClient, final CompressionCodec.CompressionType compressionType) {
+        this.isPatRedisClient = false;
+
+        this.redisClient = redisClient;
 
         this.compressionType = compressionType;
 
@@ -83,7 +97,10 @@ public final class Pat implements PatClient {
     @Override
     public void shutdown() {
         this.disconnect();
-        this.redisClient.shutdown();
+
+        if (this.isPatRedisClient) {
+            this.redisClient.shutdown();
+        }
     }
 
     @Override

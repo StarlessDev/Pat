@@ -3,7 +3,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "com.fabiodm.pat"
+group = "com.fabiodm"
 version = "1.1.3"
 
 repositories {

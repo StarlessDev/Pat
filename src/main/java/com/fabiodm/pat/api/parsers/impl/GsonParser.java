@@ -9,8 +9,8 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Optional;
 
 /*
-* Class responsible for parsing PatEvent messages into JsonElement objects using Gson.
-* */
+ * Class responsible for parsing PatEvent messages into JsonElement objects using Gson.
+ * */
 public class GsonParser extends PatParser<JsonElement> {
 
     public GsonParser(PatEvent event) {

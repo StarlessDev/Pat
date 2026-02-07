@@ -17,8 +17,8 @@ public class AnnotatedSubscription extends PatSubscription {
     private final Method handlerMethod;
 
     /*
-    * Constructor for the AnnotatedSubscription class.
-    */
+     * Constructor for the AnnotatedSubscription class.
+     */
     public AnnotatedSubscription(Method handlerMethod) {
         this.handlerMethod = handlerMethod;
         if (!this.handlerMethod.trySetAccessible()) {
@@ -30,8 +30,8 @@ public class AnnotatedSubscription extends PatSubscription {
     }
 
     /*
-    * Method invoked when the PatEvent is handled.
-    * */
+     * Method invoked when the PatEvent is handled.
+     * */
     @Override
     public void handle(final Object listener, final PatEvent event) {
         try {
