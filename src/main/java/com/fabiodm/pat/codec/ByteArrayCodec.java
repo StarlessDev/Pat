@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * This class implements the RedisCodec interface for encoding and decoding keys and values to and from ByteBuffers.
- * The keys are of type String and the values are of type byte array.
+ * The keys are of type String, and the values are of type byte array.
  */
 public final class ByteArrayCodec implements RedisCodec<String, byte[]> {
 

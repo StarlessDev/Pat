@@ -1,6 +1,6 @@
 plugins {
-    java
-    `maven-publish`
+    id("java-library")
+    id("maven-publish")
 }
 
 group = "dev.starless"
@@ -27,11 +27,9 @@ publishing {
         }
     }
 
-    publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                from(components["java"])
-            }
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
         }
     }
 }
@@ -39,6 +37,9 @@ publishing {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 tasks {

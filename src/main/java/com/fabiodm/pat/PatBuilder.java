@@ -2,6 +2,7 @@ package com.fabiodm.pat;
 
 import com.fabiodm.pat.api.PatClient;
 import io.lettuce.core.ClientOptions;
+import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.TimeoutOptions;
 import io.lettuce.core.codec.CompressionCodec;
@@ -15,9 +16,10 @@ import java.time.Duration;
  */
 public final class PatBuilder {
 
-    private final RedisURI redisURI;
-    private ClientOptions clientOptions;
+    private RedisClient redisClient;
+    private RedisURI redisURI;
 
+    private ClientOptions clientOptions;
     private CompressionCodec.CompressionType compressionType;
 
     /**
@@ -27,13 +29,17 @@ public final class PatBuilder {
     private PatBuilder(final RedisURI redisURI) {
         this.redisURI = redisURI;
         this.clientOptions = ClientOptions.builder()
-            .autoReconnect(true)
-            .pingBeforeActivateConnection(true)
-            .scriptCharset(StandardCharsets.UTF_8)
-            .timeoutOptions(TimeoutOptions.builder()
-                .fixedTimeout(Duration.ofSeconds(3))
-                .build())
-            .build();
+                .autoReconnect(true)
+                .pingBeforeActivateConnection(true)
+                .scriptCharset(StandardCharsets.UTF_8)
+                .timeoutOptions(TimeoutOptions.builder()
+                        .fixedTimeout(Duration.ofSeconds(3))
+                        .build())
+                .build();
+    }
+
+    private PatBuilder(final RedisClient redisClient) {
+        this.redisClient = redisClient;
     }
 
     /**
@@ -43,6 +49,10 @@ public final class PatBuilder {
      */
     public static PatBuilder create(final RedisURI redisURI) {
         return new PatBuilder(redisURI);
+    }
+
+    public static PatBuilder create(final RedisClient redisClient) {
+        return new PatBuilder(redisClient);
     }
 
     /**
@@ -75,8 +85,12 @@ public final class PatBuilder {
      * @throws IllegalArgumentException if either RedisURI or ClientOptions is not set
      */
     public PatClient build() {
+        if (this.redisClient != null) {
+            return new Pat(this.redisClient, this.compressionType);
+        }
+
         if (this.redisURI == null || this.clientOptions == null) {
-            throw new IllegalArgumentException("RedisURI and ClientOptions must be set before building Pat");
+            throw new IllegalArgumentException("RedisURI and ClientOptions must be set before building Pat otherwise you can use an existing RedisClient");
         }
 
         return new Pat(this.redisURI, this.clientOptions, this.compressionType);

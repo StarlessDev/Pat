@@ -50,7 +50,7 @@ public interface PatClient {
      * only when the entire listener is unregistered.
      *
      * @param listener an already registered listener
-     * @param channel the channel to subscribe to
+     * @param channel  the channel to subscribe to
      * @param consumer the consumer to handle the messages
      */
     void subscribeToChannel(final Object listener,

@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * This annotation is used to mark methods that should be invoked when a message is received on a specific channel.
  * The channel is specified as a parameter to the annotation.
- * The annotated methods should be part of a class that is registered as a listener in the Pat system.
+ * The annotated methods should be part of a class registered as a listener in the Pat system.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
