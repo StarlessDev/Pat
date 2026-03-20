@@ -19,14 +19,6 @@ dependencies {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "milkyway"
-            url = uri("https://repo.starless.dev/releases")
-            credentials(PasswordCredentials::class)
-        }
-    }
-
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
