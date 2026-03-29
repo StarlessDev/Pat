@@ -125,6 +125,10 @@ public final class Pat implements PatClient {
     public void subscribeToChannel(final Object listener,
                                    final String channel,
                                    final Consumer<PatEvent> consumer) {
+        if (!this.listeners.containsKey(listener.getClass())) {
+            this.register(listener);
+        }
+
         final PatHandler handler = this.listeners.get(listener.getClass());
         if (handler == null) return;
 
